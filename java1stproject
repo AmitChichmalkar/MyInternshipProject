@@ -1,0 +1,92 @@
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Scanner;
+
+class Question {
+    private String text;
+    private List<String> options;
+    private int correctAnswerIndex;
+
+    public Question(String text, List<String> options, int correctAnswerIndex) {
+        this.text = text;
+        this.options = options;
+        this.correctAnswerIndex = correctAnswerIndex;
+    }
+
+    public boolean isCorrect(int userAnswer) {
+        return userAnswer == correctAnswerIndex;
+    }
+
+    public String getText() {
+        return text;
+    }
+
+    public List<String> getOptions() {
+        return options;
+    }
+}
+
+class Quiz {
+    private List<Question> questions;
+    private int score;
+
+    public Quiz(List<Question> questions) {
+        this.questions = questions;
+        this.score = 0;
+    }
+
+    public void takeQuiz() {
+        Collections.shuffle(questions);
+        Scanner scanner = new Scanner(System.in);
+
+        for (Question question : questions) {
+            System.out.println(question.getText());
+            List<String> options = question.getOptions();
+            for (int i = 0; i < options.size(); i++) {
+                System.out.println((i + 1) + ". " + options.get(i));
+            }
+
+            int userAnswer = getUserInput(options.size());
+            if (question.isCorrect(userAnswer)) {
+                System.out.println("Correct!\n");
+                score++;
+            } else {
+                System.out.println("Wrong! The correct answer was " + (question.isCorrect(1) ? "A" : "B") + ".\n");
+            }
+        }
+
+        System.out.println("Quiz completed! Your score: " + score + "/" + questions.size());
+    }
+
+    private int getUserInput(int numOptions) {
+        Scanner scanner = new Scanner(System.in);
+        while (true) {
+            try {
+                System.out.print("Enter your choice (1-" + numOptions + "): ");
+                int userAnswer = Integer.parseInt(scanner.nextLine());
+                if (userAnswer >= 1 && userAnswer <= numOptions) {
+                    return userAnswer;
+                } else {
+                    System.out.println("Invalid input. Please enter a number within the specified range.");
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid input. Please enter a valid number.");
+            }
+        }
+    }
+}
+
+public class test {
+    public static void main(String[] args) {
+        Question question1 = new Question("What is the capital of France?", Arrays.asList("Berlin", "Madrid", "Paris", "Rome"), 3);
+        Question question2 = new Question("Which planet is known as the Red Planet?", Arrays.asList("Mars", "Jupiter", "Venus", "Saturn"), 1);
+        Question question3 = new Question("What is the largest mammal on Earth?", Arrays.asList("Elephant", "Blue Whale", "Giraffe", "Hippopotamus"), 2);
+
+        List<Question> quizQuestions = Arrays.asList(question1, question2, question3);
+        Quiz quiz = new Quiz(quizQuestions);
+
+        quiz.takeQuiz();
+    }
+}

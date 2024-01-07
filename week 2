@@ -1,0 +1,69 @@
+import java.util.HashMap;
+import java.util.Map;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+
+    public class LinkShortener {
+
+        private Map<String, String> urlMappings;
+
+        public LinkShortener() {
+            this.urlMappings = new HashMap<>();
+        }
+
+        // Generate a short URL using a basic hash function
+        private String generateShortURL(String longURL) {
+            try {
+                MessageDigest md = MessageDigest.getInstance("MD5");
+                byte[] mdBytes = md.digest(longURL.getBytes());
+
+                StringBuilder sb = new StringBuilder();
+                for (byte mdByte : mdBytes) {
+                    sb.append(Integer.toString((mdByte & 0xff) + 0x100, 16).substring(1));
+                }
+
+                return sb.toString().substring(0, 8); // Use the first 8 characters as the short URL
+            } catch (NoSuchAlgorithmException e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
+
+        // Shorten a long URL
+        public String shortenURL(String longURL) {
+            if (urlMappings.containsValue(longURL)) {
+                System.out.println("Error: URL already shortened.");
+                return null;
+            }
+
+            String shortURL = generateShortURL(longURL);
+            urlMappings.put(shortURL, longURL);
+            return shortURL;
+        }
+
+        // Expand a short URL to its original form
+        public String expandURL(String shortURL) {
+            String longURL = urlMappings.get(shortURL);
+            if (longURL == null) {
+                System.out.println("Error: Short URL not found.");
+                return null;
+            }
+
+            return longURL;
+        }
+
+        public static void main(String[] args) {
+            LinkShortener linkShortener = new LinkShortener();
+
+            // Example: Shorten a URL
+            String longURL = "https://www.example.com";
+            String shortURL = linkShortener.shortenURL(longURL);
+            System.out.println("Shortened URL: " + shortURL);
+
+            // Example: Expand a URL
+            String expandedURL = linkShortener.expandURL(shortURL);
+            System.out.println("Expanded URL: " + expandedURL);
+        }
+    }
+
+
